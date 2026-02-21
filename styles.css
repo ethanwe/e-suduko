@@ -1,0 +1,149 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --bg: #f4f7ff;
+  --surface: #fff;
+  --line: #3654c5;
+  --line-light: #c8d4ff;
+  --accent: #2045d4;
+  --text: #19203a;
+  --danger: #b42318;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100svh;
+}
+
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+header p {
+  margin-top: 0.4rem;
+  color: #4a5584;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.controls label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+select,
+button {
+  border: 1px solid #bdcaf9;
+  border-radius: 10px;
+  background: var(--surface);
+  min-height: 44px;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+button {
+  font-weight: 700;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.board-wrap {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 0.65rem;
+  box-shadow: 0 4px 14px rgba(45, 74, 182, 0.12);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: 3px solid var(--line);
+  overflow: hidden;
+}
+
+.cell {
+  border: 1px solid var(--line-light);
+  display: grid;
+  place-items: center;
+  font-size: clamp(1rem, 2.7vw, 1.4rem);
+  font-weight: 600;
+  user-select: none;
+}
+
+.cell.prefilled {
+  background: #eef2ff;
+  color: #111f58;
+}
+
+.cell.editable {
+  cursor: pointer;
+}
+
+.cell.selected {
+  background: #dae4ff;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.cell.related {
+  background: #f2f6ff;
+}
+
+.cell.error {
+  color: var(--danger);
+  background: #fff0ef;
+}
+
+.cell[data-col="2"],
+.cell[data-col="5"] {
+  border-right: 3px solid var(--line);
+}
+
+.cell[data-row="2"],
+.cell[data-row="5"] {
+  border-bottom: 3px solid var(--line);
+}
+
+.keypad {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.45rem;
+}
+
+.keypad button.clear {
+  grid-column: span 2;
+}
+
+.status {
+  margin-top: 0.8rem;
+  min-height: 1.4rem;
+  font-weight: 600;
+}
+
+@media (max-width: 420px) {
+  .controls {
+    grid-template-columns: 1fr;
+  }
+}
