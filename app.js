@@ -38,9 +38,19 @@ const newGameEl = document.getElementById("new-game");
 const checkEl = document.getElementById("check");
 const hintEl = document.getElementById("hint");
 const keypadEl = document.querySelector(".keypad");
+const modeValueEl = document.getElementById("mode-value");
+const modeCenterEl = document.getElementById("mode-center");
+const modeCornerEl = document.getElementById("mode-corner");
+
+const ENTRY_MODE = {
+  VALUE: "value",
+  CENTER: "center",
+  CORNER: "corner"
+};
 
 let current = null;
 let selectedIndex = null;
+let entryMode = ENTRY_MODE.VALUE;
 
 function pickPuzzle(level) {
   const list = PUZZLES[level] ?? PUZZLES.medium;
@@ -52,9 +62,12 @@ function initGame() {
   current = {
     puzzle: pick.puzzle,
     solution: pick.solution,
-    values: [...pick.puzzle]
+    values: [...pick.puzzle],
+    centerNotes: Array.from({ length: 81 }, () => new Set()),
+    cornerNotes: Array.from({ length: 81 }, () => new Set())
   };
   selectedIndex = null;
+  setEntryMode(ENTRY_MODE.VALUE);
   drawBoard();
   setStatus("New game started.");
 }
@@ -73,11 +86,42 @@ function drawBoard() {
     cell.dataset.index = String(index);
     cell.dataset.row = String(row);
     cell.dataset.col = String(col);
-    cell.textContent = value === "0" ? "" : value;
+    renderCell(index, cell);
     if (!fixed) cell.addEventListener("click", () => selectCell(index));
 
     boardEl.appendChild(cell);
   });
+}
+
+function renderCell(index, cell = boardEl.children[index]) {
+  const value = current.values[index];
+  cell.innerHTML = "";
+
+  if (value !== "0") {
+    const valueEl = document.createElement("span");
+    valueEl.className = "cell-value";
+    valueEl.textContent = value;
+    cell.appendChild(valueEl);
+    return;
+  }
+
+  const cornerLayer = document.createElement("div");
+  cornerLayer.className = "notes notes-corner";
+  for (let digit = 1; digit <= 9; digit += 1) {
+    const cornerNote = document.createElement("span");
+    cornerNote.textContent = current.cornerNotes[index].has(String(digit)) ? String(digit) : "";
+    cornerLayer.appendChild(cornerNote);
+  }
+  cell.appendChild(cornerLayer);
+
+  const centerLayer = document.createElement("div");
+  centerLayer.className = "notes notes-center";
+  for (let digit = 1; digit <= 9; digit += 1) {
+    const centerNote = document.createElement("span");
+    centerNote.textContent = current.centerNotes[index].has(String(digit)) ? String(digit) : "";
+    centerLayer.appendChild(centerNote);
+  }
+  cell.appendChild(centerLayer);
 }
 
 function selectCell(index) {
@@ -116,20 +160,56 @@ function setValue(value) {
     return;
   }
 
-  current.values[selectedIndex] = value;
   const cell = boardEl.children[selectedIndex];
-  cell.textContent = value === "0" ? "" : value;
   cell.classList.remove("error");
 
-  if (value !== "0" && current.solution[selectedIndex] !== value) {
-    cell.classList.add("error");
+  if (entryMode === ENTRY_MODE.VALUE) {
+    current.values[selectedIndex] = value;
+    if (value !== "0") {
+      current.centerNotes[selectedIndex].clear();
+      current.cornerNotes[selectedIndex].clear();
+    }
+    renderCell(selectedIndex);
+
+    if (value !== "0" && current.solution[selectedIndex] !== value) {
+      cell.classList.add("error");
+    }
+
+    if (current.values.join("") === current.solution) {
+      setStatus("🎉 You solved it!");
+    } else {
+      setStatus("Keep going.");
+    }
+    return;
   }
 
-  if (current.values.join("") === current.solution) {
-    setStatus("🎉 You solved it!");
-  } else {
-    setStatus("Keep going.");
+  if (value === "0") {
+    current.centerNotes[selectedIndex].clear();
+    current.cornerNotes[selectedIndex].clear();
+    current.values[selectedIndex] = "0";
+    renderCell(selectedIndex);
+    setStatus("Notes cleared.");
+    return;
   }
+
+  if (current.values[selectedIndex] !== "0") {
+    setStatus("Clear the value before adding notes.");
+    return;
+  }
+
+  const notes = entryMode === ENTRY_MODE.CENTER
+    ? current.centerNotes[selectedIndex]
+    : current.cornerNotes[selectedIndex];
+
+  if (notes.has(value)) {
+    notes.delete(value);
+    setStatus("Note removed.");
+  } else {
+    notes.add(value);
+    setStatus("Note added.");
+  }
+
+  renderCell(selectedIndex);
 }
 
 function checkBoard() {
@@ -162,10 +242,27 @@ function revealHint() {
 
   const index = empties[Math.floor(Math.random() * empties.length)];
   current.values[index] = current.solution[index];
+  current.centerNotes[index].clear();
+  current.cornerNotes[index].clear();
   const cell = boardEl.children[index];
-  cell.textContent = current.solution[index];
+  renderCell(index);
   cell.classList.remove("error");
   setStatus("Hint added.");
+}
+
+function setEntryMode(mode) {
+  entryMode = mode;
+  const buttons = [
+    [modeValueEl, ENTRY_MODE.VALUE],
+    [modeCenterEl, ENTRY_MODE.CENTER],
+    [modeCornerEl, ENTRY_MODE.CORNER]
+  ];
+
+  buttons.forEach(([button, buttonMode]) => {
+    const active = mode === buttonMode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 }
 
 function setStatus(message) {
@@ -175,6 +272,9 @@ function setStatus(message) {
 newGameEl.addEventListener("click", initGame);
 checkEl.addEventListener("click", checkBoard);
 hintEl.addEventListener("click", revealHint);
+modeValueEl.addEventListener("click", () => setEntryMode(ENTRY_MODE.VALUE));
+modeCenterEl.addEventListener("click", () => setEntryMode(ENTRY_MODE.CENTER));
+modeCornerEl.addEventListener("click", () => setEntryMode(ENTRY_MODE.CORNER));
 
 keypadEl.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-num]");
