@@ -180,9 +180,7 @@ export function createSudokuController(elements) {
       }
 
       const index = Number(cell.dataset.index);
-      if (!isFixedCell(app.state, index)) {
-        selectCell(index);
-      }
+      selectCell(index);
     });
 
     document.addEventListener("keydown", (event) => {
