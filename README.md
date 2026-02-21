@@ -26,6 +26,19 @@ This repo includes a GitHub Actions workflow at `.github/workflows/deploy-gh-pag
 After deployment, your site will be available at:
 - `https://<your-username>.github.io/<your-repo-name>/`
 
+## Code structure
+
+JavaScript is split by responsibility to keep files readable:
+
+- `app.js`: module entrypoint and DOM element wiring
+- `js/sudoku-controller.js`: game controller (events + game actions)
+- `js/config.js`: shared constants
+- `js/puzzles.js`: puzzle data set
+- `js/game-state.js`: pure game-state helpers
+- `js/board-view.js`: board rendering and cell visual state
+
+This project intentionally stays framework-free because the interaction surface is small and static, and native ES modules provide maintainable structure without adding a build step.
+
 ## Features
 
 - Touch-sized Sudoku grid and keypad
