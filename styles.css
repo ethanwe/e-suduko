@@ -124,11 +124,12 @@ button:active {
 .board {
   --board-size: clamp(250px, calc(100svh - 385px), min(92vw, 560px));
   width: min(100%, var(--board-size));
+  height: min(100%, var(--board-size));
   margin: 0 auto;
   aspect-ratio: 1/1;
   display: grid;
   grid-template-columns: repeat(9, 1fr);
-  grid-template-rows: repeat(9, minmax(0, 1fr));
+  grid-template-rows: repeat(9, 1fr);
   border: 2px solid #6f85b7;
   border-radius: 14px;
   overflow: hidden;
@@ -145,7 +146,8 @@ button:active {
   padding: 0;
   display: grid;
   place-items: center;
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
   font-size: clamp(1rem, 4vw, 2rem);
   line-height: 1;
   font-weight: 600;
