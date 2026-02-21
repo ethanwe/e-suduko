@@ -32,3 +32,4 @@ After deployment, your site will be available at:
 - Easy/Medium/Hard puzzle sets
 - Check mistakes anytime
 - Hint button
+- Center and corner pencil notes

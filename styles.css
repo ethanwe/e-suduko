@@ -73,6 +73,23 @@ button:active {
   box-shadow: 0 4px 14px rgba(45, 74, 182, 0.12);
 }
 
+.note-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.8rem;
+}
+
+.note-modes .mode {
+  min-height: 38px;
+  font-size: 0.9rem;
+}
+
+.note-modes .mode.active {
+  border-color: var(--accent);
+  background: #e8eeff;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
@@ -89,6 +106,48 @@ button:active {
   font-size: clamp(1rem, 2.7vw, 1.4rem);
   font-weight: 600;
   user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.cell-value {
+  position: relative;
+  z-index: 2;
+}
+
+.notes {
+  position: absolute;
+  inset: 3px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  pointer-events: none;
+}
+
+.notes span {
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  min-width: 0;
+}
+
+.notes-corner {
+  z-index: 1;
+  color: #3d518f;
+}
+
+.notes-corner span {
+  font-size: clamp(0.45rem, 1.35vw, 0.62rem);
+}
+
+.notes-center {
+  z-index: 1;
+  color: #11296f;
+}
+
+.notes-center span {
+  font-size: clamp(0.54rem, 1.55vw, 0.7rem);
+  font-weight: 700;
 }
 
 .cell.prefilled {
